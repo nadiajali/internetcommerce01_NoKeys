@@ -1,0 +1,116 @@
+﻿@model internetcommerce01.Models.Home.HomeIndexViewModel
+@using PagedList;
+@using PagedList.Mvc;
+
+@{
+	ViewBag.Title = "Home Page";
+}
+
+@* Carousel Begin *@
+<div id="themeSlider" class="carousel slide" data-ride="carousel">
+	<ol class="carousel-indicators">
+		<li data-target="#themeSlider" data-slide-to="0" class="active"></li>
+		<li data-target="#themeSlider" data-slide-to="1"></li>
+		<li data-target="#themeSlider" data-slide-to="2"></li>
+	</ol>
+
+	<div class="carousel-inner" style="width:1100px; display:block; margin:auto;">
+		<div class="item active">
+			<div class="imgOverlay" style="background-color:black; z-index:-1;"></div>
+			<img style="height:380px; width:auto; display:block; margin:auto;" src="https://nadiajali-internetcommerce01.s3.us-east-2.amazonaws.com/bicycle_banner_01_resized.jpg">
+			<div class="carousel-caption">
+				@*
+					<h3>First slide</h3>
+					<p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
+				*@
+			</div>
+		</div>
+		<div class="item">
+			<div class="imgOverlay" style="background-color:slategray; z-index:-1;"></div>
+			<img style="height:380px; width:auto; display:block; margin:auto;" src="https://nadiajali-internetcommerce01.s3.us-east-2.amazonaws.com/bicycle_banner_02.jpg">
+			<div class="carousel-caption">
+				@*
+					<h3>Second slide</h3>
+					<p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
+				*@
+			</div>
+		</div>
+		<div class="item">
+			<div class="imgOverlay" style="background-color:black; z-index:-1;"></div>
+			<img style="height:380px; width:auto; display:block; margin:auto;" src="https://nadiajali-internetcommerce01.s3.us-east-2.amazonaws.com/bicycle_banner_03.jpg">
+			<div class="carousel-caption">
+				@*
+					<h3>Third slide</h3>
+					<p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
+				*@
+			</div>
+		</div>
+	</div>
+
+	<a class="left carousel-control" href="#themeSlider" data-slide="prev">
+		<span class="fa fa-chevron-left" style="background-color:darkred;"></span>
+	</a>
+	<a class="right carousel-control" href="#themeSlider" data-slide="next">
+		<span class="fa fa-chevron-right" style="background-color:darkred;"></span>
+	</a>
+</div>
+@* Carousel End *@
+
+@* Search Bar Begin *@
+<div class="olContent f1"><h2 style="color:black;">Search Product or Category</h2></div>
+<form method="post">
+	<div class="olSearch fr">
+		<input type="text" placeholder="Enter Keyword" name="search" class="inputComn houseText form-control" />
+		<div class="searchIcon">
+			<button type="submit" class="searchBtn">
+				<img src="https://nadiajali-internetcommerce01.s3.us-east-2.amazonaws.com/searchIcon.png" />
+			</button>
+		</div>
+	</div>
+</form>
+@* Search Bar End *@
+
+@* Products Begin *@
+<div class="row">
+	<div class="col-md-12">
+		<div class="page-header">
+			<h2>Our Products <small>Trending Products</small></h2>
+		</div>
+	</div>
+</div>
+<div class="row product-container">
+	@foreach (var item in Model.ListOfProducts)
+	{
+		<div class="col-md-3 col-sm-3 col-xs-6" style="margin-bottom:8px;">
+			<div class="thumbnail product-item" style="height:300px;">
+				<img class="img-responsive" title="Click to View Product Detail" style="cursor:default; height:160px; width:auto;" src="@item.ProductImage" />
+				<div class="caption">
+					<h5>@item.ProductName</h5>
+					<p>$@Convert.ToDecimal(item.Price).ToString("#,###.##")</p>
+					@if (item.Quantity > 0)
+					{
+						using (Html.BeginForm("AddToCart", "Home", new { productID = item.ProductID, url = "Index", FormMethod.Post }))
+						{
+							@:<button type="submit" class="pull-right"><i class="fa fa-shopping-cart"></i></button>
+						}
+						@:<p>Available</p>
+					}
+					else
+					{
+						@:<p>Not Available</p>
+					}
+					@if (item.IsFeatured == true)
+					{
+						@:<div class="product-item-badge">New</div>
+					}
+				</div>
+			</div>
+		</div>
+	}
+</div>
+<div class="text-center">
+	@Html.PagedListPager(Model.ListOfProducts, page => Url.Action("Index", new { page, search = Request.QueryString["search"] }))
+</div>
+@* Products End *@
+
+

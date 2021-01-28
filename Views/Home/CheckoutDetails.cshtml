@@ -1,0 +1,73 @@
+﻿@using internetcommerce01.Models.Home;
+@{
+	ViewBag.Title = "CheckoutDetails";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1 class="mt-4">Cart</h1>
+<br />
+@{bool cartIsEmpty;}
+@if (((List<Item>)Session["cart"] == null) || (((List<Item>)Session["cart"]).Count < 1))
+{
+	cartIsEmpty = true;
+
+	<div class="alert alert-danger">
+		<strong>Cart Is Empty</strong>
+	</div>
+}
+else
+{
+	cartIsEmpty = false;
+
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th>Product</th>
+				<th>Price</th>
+				<th>Quantity</th>
+				<th>Add or Remove</th>
+				<th style="text-align:right;">Total</th>
+			</tr>
+		</thead>
+		<tbody>
+			@{
+				decimal subtotal = 0;
+			}
+			@foreach (Item item in (List<Item>)Session["cart"])
+			{
+				decimal lineTotal = Convert.ToDecimal(item.Product.Price * item.Quantity);
+				subtotal = Convert.ToDecimal(subtotal + lineTotal);
+				Session["SessionTotal"] = subtotal;
+				<tr>
+					<td>@item.Product.ProductName</td>
+
+					<td>$@Convert.ToDecimal(item.Product.Price).ToString("#,###.##")</td>
+					<td>@item.Quantity</td>
+					<td>
+						<a href="@Url.Action("AddToCart", "Home", new { productID = item.Product.ProductID, url="CheckoutDetails" })"><i class="fa fa-plus"></i></a>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						&nbsp;
+						<a href="@Url.Action("DecreaseQuantity", "Home", new { productID = item.Product.ProductID, url="CheckoutDetails" })"><i class="fa fa-minus"></i></a>
+					</td>
+					<td style="text-align:right;">$@lineTotal.ToString("#,###.##")</td>
+				</tr>
+			}
+			<tr>
+				<td style="border-left-style:hidden; border-bottom-style:hidden;"></td>
+				<td style="border-left-style:hidden; border-bottom-style:hidden;"></td>
+				<td style="border-left-style:hidden; border-bottom-style:hidden;"></td>
+				<td style="border-left-style:hidden; border-bottom-style:hidden;"></td>
+				<td style="text-align:right;"><b>$@subtotal.ToString("#,###.##")</b></td>
+			</tr>
+		</tbody>
+	</table>
+
+	if (cartIsEmpty == false)
+	{
+		<div style="text-align:right;">
+			<a class="btn btn-success" href="@Url.Action("PaymentWithPayPal", "Payment")">Continue to Checkout</a>
+		</div>
+	}
+}
+
